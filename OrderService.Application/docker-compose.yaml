@@ -1,0 +1,12 @@
+services:
+
+  db:
+    image: mysql:8.0.43
+    restart: always
+    ports:
+    - 3310:3306
+    environment:
+      MYSQL_DATABASE: OrderService
+      MYSQL_ROOT_PASSWORD: changetherootpassword
+      MYSQL_USER: tempuser
+      MYSQL_PASSWORD: changethepassword
