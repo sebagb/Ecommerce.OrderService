@@ -1,0 +1,18 @@
+using Microsoft.Extensions.DependencyInjection;
+using OrderService.Application.Database;
+using OrderService.Application.Repositories;
+
+namespace OrderService.Application;
+
+public static class ApplicationServiceCollectionExtension
+{
+    public static IServiceCollection AddApplication
+        (this IServiceCollection service, string connectionString)
+    {
+        service.AddScoped<IOrderRepository, OrderRepository>();
+        service.AddScoped<IDbConectionFactory>(_ =>
+            new MySqlConnectionFactory(connectionString));
+
+        return service;
+    }
+}
