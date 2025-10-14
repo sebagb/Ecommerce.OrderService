@@ -5,5 +5,5 @@ namespace OrderService.Application.Repositories;
 public interface IOrderRepository
 {
     public void CreateOrder(Order order);
-    public Order GetOrderById(Guid id);
+    public Order? GetOrderById(Guid id);
 }

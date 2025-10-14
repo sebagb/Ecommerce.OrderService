@@ -5,5 +5,5 @@ namespace OrderService.Application.Services;
 public interface IOrderService
 {
     public void CreateOrder(Order order);
-    public Order GetOrderById(Guid id);
+    public Order? GetOrderById(Guid id);
 }

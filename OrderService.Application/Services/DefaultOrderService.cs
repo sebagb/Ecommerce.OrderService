@@ -11,7 +11,7 @@ public class DefaultOrderService(IOrderRepository repository) : IOrderService
         repository.CreateOrder(order);
     }
 
-    public Order GetOrderById(Guid id)
+    public Order? GetOrderById(Guid id)
     {
         return repository.GetOrderById(id);
     }
