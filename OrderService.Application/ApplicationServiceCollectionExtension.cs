@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrderService.Application.Database;
 using OrderService.Application.Repositories;
+using OrderService.Application.Services;
 
 namespace OrderService.Application;
 
@@ -13,6 +14,8 @@ public static class ApplicationServiceCollectionExtension
         service.AddScoped<IDbConnectionFactory>(_ =>
             new MySqlConnectionFactory(connectionString));
         service.AddSingleton<DbInitializer>();
+
+        service.AddScoped<IOrderService, DefaultOrderService>();
 
         return service;
     }
