@@ -12,10 +12,10 @@ public class DbInitializer(IDbConnectionFactory connectionFactory)
 
         connection.Execute("""
         CREATE TABLE IF NOT EXISTS Orders (
-            OrderId BINARY(16) PRIMARY KEY,
-            CustomerId BINARY(16),
-            ProductId BINARY(16),
-            OrderedOn TIMESTAMP,
+            OrderId CHAR(36) PRIMARY KEY,
+            CustomerId CHAR(36),
+            ProductId CHAR(36),
+            OrderedOn DATETIME,
             Price DECIMAL(7,2),
             Quantity INTEGER
         )
