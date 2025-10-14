@@ -5,7 +5,7 @@ namespace OrderService.Application.Database;
 
 public class MySqlConnectionFactory
     (string connectionString)
-    : IDbConectionFactory
+    : IDbConnectionFactory
 {
     public IDbConnection CreateConnection()
     {

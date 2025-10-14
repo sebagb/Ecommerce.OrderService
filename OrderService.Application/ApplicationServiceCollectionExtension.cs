@@ -10,7 +10,7 @@ public static class ApplicationServiceCollectionExtension
         (this IServiceCollection service, string connectionString)
     {
         service.AddScoped<IOrderRepository, OrderRepository>();
-        service.AddScoped<IDbConectionFactory>(_ =>
+        service.AddScoped<IDbConnectionFactory>(_ =>
             new MySqlConnectionFactory(connectionString));
 
         return service;
