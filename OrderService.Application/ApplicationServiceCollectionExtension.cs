@@ -13,7 +13,7 @@ public static class ApplicationServiceCollectionExtension
         service.AddScoped<IOrderRepository, OrderRepository>();
         service.AddScoped<IDbConnectionFactory>(_ =>
             new MySqlConnectionFactory(connectionString));
-        service.AddSingleton<DbInitializer>();
+        service.AddScoped<DbInitializer>();
 
         service.AddScoped<IOrderService, DefaultOrderService>();
 
