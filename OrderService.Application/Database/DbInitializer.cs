@@ -17,7 +17,8 @@ public class DbInitializer(IDbConnectionFactory connectionFactory)
             ProductId CHAR(36),
             OrderedOn DATETIME,
             Price DECIMAL(7,2),
-            Quantity INTEGER
+            Quantity INTEGER,
+            Status VARCHAR(100)
         )
         """);
     }

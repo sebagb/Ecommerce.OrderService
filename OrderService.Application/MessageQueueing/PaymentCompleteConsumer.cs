@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.Extensions.Hosting;
+using OrderService.Application.Services;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -7,11 +8,13 @@ namespace OrderService.Application.MessageQueueing;
 
 public class PaymentCompleteConsumer
     (string hostName,
-     string queueName)
+     string queueName,
+     IOrderService service)
     : IHostedService
 {
     private readonly string hostName = hostName;
     private readonly string queueName = queueName;
+    private readonly IOrderService service = service;
     private IConnection? connection;
     private IChannel? channel;
 
@@ -38,6 +41,10 @@ public class PaymentCompleteConsumer
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             Console.WriteLine(message);
+
+            var id = new Guid(message);
+            service.UpdateOrderStatus(id);
+
             return Task.CompletedTask;
         };
 

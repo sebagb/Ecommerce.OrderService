@@ -8,4 +8,5 @@ public class Order
     public required DateTime OrderedOn { get; set; }
     public required decimal Price { get; set; }
     public required int Quantity { get; set; }
+    public required string Status { get; set; }
 }

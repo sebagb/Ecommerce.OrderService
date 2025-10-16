@@ -21,14 +21,16 @@ public class OrderRepository
                 ProductId,
                 OrderedOn,
                 Price,
-                Quantity)
+                Quantity,
+                Status)
             VALUES (
                 @OrderId,
                 @CustomerId,
                 @ProductId,
                 @OrderedOn,
                 @Price,
-                @Quantity)
+                @Quantity,
+                @Status)
             """, order);
 
         var result = connection.Execute(cmd);
@@ -52,5 +54,18 @@ public class OrderRepository
         }
 
         return order;
+    }
+
+    public void UpdateOrderStatus(Guid id)
+    {
+        using var connection = connectionFactory.CreateConnection();
+
+        var cmd = new CommandDefinition("""
+            UPDATE Orders
+            SET Status = 'Paid'
+            WHERE OrderId = @id
+            """, new { id });
+
+        connection.Execute(cmd);
     }
 }

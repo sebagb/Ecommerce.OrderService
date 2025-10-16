@@ -11,13 +11,13 @@ public static class ApplicationServiceCollectionExtension
     public static IServiceCollection AddApplication
         (this IServiceCollection service, string connectionString)
     {
-        service.AddScoped<IOrderRepository, OrderRepository>();
+        service.AddSingleton<IOrderRepository, OrderRepository>();
         service.AddSingleton<IDbConnectionFactory>(_ =>
             new MySqlConnectionFactory(connectionString));
 
         service.AddSingleton<DbInitializer>();
 
-        service.AddScoped<IOrderService, DefaultOrderService>();
+        service.AddSingleton<IOrderService, DefaultOrderService>();
         return service;
     }
 
@@ -27,12 +27,17 @@ public static class ApplicationServiceCollectionExtension
         string orderCreatedQueue,
         string paymentCompleteQueue)
     {
-        service.AddScoped(_ =>
+        service.AddSingleton(_ =>
             new OrderCreatedProducer(hostName, orderCreatedQueue));
 
-        service.AddHostedService(_ =>
-            new PaymentCompleteConsumer(hostName, paymentCompleteQueue));
-
+        service.AddHostedService(x =>
+        {
+            var orderService = x.GetRequiredService<IOrderService>();
+            return new PaymentCompleteConsumer(
+                hostName,
+                paymentCompleteQueue,
+                orderService);
+        });
         return service;
     }
 }

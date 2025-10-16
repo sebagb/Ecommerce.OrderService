@@ -15,7 +15,8 @@ public static class ContractMapping
             ProductId = request.ProductId,
             OrderedOn = DateTime.Now,
             Price = request.Price,
-            Quantity = request.Quantity
+            Quantity = request.Quantity,
+            Status = "Pending"
         };
     }
 
@@ -29,6 +30,7 @@ public static class ContractMapping
             OrderedOn = order.OrderedOn,
             Price = order.Price,
             Quantity = order.Quantity,
+            Status = order.Status
         };
     }
 }
