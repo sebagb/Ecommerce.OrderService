@@ -13,12 +13,16 @@ var hostName =
 var orderCreatedQueue =
     builder.Configuration["MessageQueuing:OrderCreatedQueue"]!;
 
+var paymentCompletedQueue =
+    builder.Configuration["MessageQueuing:PaymentCompletedQueue"]!;
+
 builder.Services
     .AddOpenApi()
     .AddApplication(connectionString!)
     .AddMessageQueueing(
         hostName,
-        orderCreatedQueue);
+        orderCreatedQueue,
+        paymentCompletedQueue);
 
 var app = builder.Build();
 

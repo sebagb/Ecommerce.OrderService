@@ -24,10 +24,14 @@ public static class ApplicationServiceCollectionExtension
     public static IServiceCollection AddMessageQueueing
         (this IServiceCollection service,
         string hostName,
-        string orderCreatedQueue)
+        string orderCreatedQueue,
+        string paymentCompleteQueue)
     {
         service.AddScoped(_ =>
             new OrderCreatedProducer(hostName, orderCreatedQueue));
+
+        service.AddHostedService(_ =>
+            new PaymentCompleteConsumer(hostName, paymentCompleteQueue));
 
         return service;
     }
