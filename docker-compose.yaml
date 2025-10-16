@@ -1,6 +1,6 @@
 services:
 
-  db:
+  mysql:
     image: mysql:8.0.43
     restart: always
     ports:
@@ -10,3 +10,13 @@ services:
       MYSQL_ROOT_PASSWORD: changetherootpassword
       MYSQL_USER: tempuser
       MYSQL_PASSWORD: changethepassword
+
+  rabitmq:
+    image: rabbitmq:management-alpine
+    restart: always
+    ports:
+    - 5672:5672
+    - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
