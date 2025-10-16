@@ -5,12 +5,10 @@ namespace OrderService.Application.MessageQueueing;
 
 public class OrderCreatedProducer(
     string hostName,
-    string queueName,
-    string producerMessage)
+    string queueName)
 {
     private readonly string hostname = hostName;
     private readonly string queueName = queueName;
-    private readonly string message = producerMessage;
 
     public async Task Publish(Guid orderId)
     {
@@ -25,7 +23,7 @@ public class OrderCreatedProducer(
             autoDelete: false,
             arguments: null);
 
-        var body = Encoding.UTF8.GetBytes(message + $"{orderId}");
+        var body = Encoding.UTF8.GetBytes(orderId.ToString());
 
         await channel.BasicPublishAsync(
             exchange: string.Empty,
