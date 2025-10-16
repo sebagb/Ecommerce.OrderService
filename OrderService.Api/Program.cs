@@ -5,10 +5,14 @@ using OrderService.Application.Database;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration["Database:ConnectionString"];
+var hostName = builder.Configuration["MessageQueuing:HostName"]!;
+var queueName = builder.Configuration["MessageQueuing:QueueName"]!;
+var producerMessage = builder.Configuration["MessageQueuing:ProducerMessage"]!;
 
 builder.Services
     .AddOpenApi()
-    .AddApplication(connectionString!);
+    .AddApplication(connectionString!)
+    .AddMessageQueueing(hostName, queueName, producerMessage);
 
 var app = builder.Build();
 

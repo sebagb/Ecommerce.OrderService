@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrderService.Application.Database;
+using OrderService.Application.MessageQueueing;
 using OrderService.Application.Repositories;
 using OrderService.Application.Services;
 
@@ -17,6 +18,17 @@ public static class ApplicationServiceCollectionExtension
         service.AddSingleton<DbInitializer>();
 
         service.AddScoped<IOrderService, DefaultOrderService>();
+        return service;
+    }
+
+    public static IServiceCollection AddMessageQueueing
+        (this IServiceCollection service,
+        string hostName,
+        string queueName,
+        string producerMessage)
+    {
+        service.AddScoped(_ =>
+            new OrderCreatedProducer(hostName, queueName, producerMessage));
 
         return service;
     }
