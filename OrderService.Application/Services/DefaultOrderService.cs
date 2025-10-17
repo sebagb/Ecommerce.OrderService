@@ -17,7 +17,10 @@ public class DefaultOrderService
 
     public void CreateOrder(Order order)
     {
-        var isValidCustomer = userApiClient.ValidateUser(order.CustomerId);
+        var user = userApiClient.GetUserById(order.CustomerId);
+        var isValidCustomer =
+            user != null
+            && !string.IsNullOrEmpty(user.Email);
 
         repository.CreateOrder(order);
 
