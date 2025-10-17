@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 var userApiUri =
     builder.Configuration["ApiServers:UserApiUri"]!;
 
+var productApiUri =
+    builder.Configuration["ApiServers:ProductApiUri"]!;
+
 var connectionString =
     builder.Configuration["Database:ConnectionString"];
 
@@ -21,7 +24,9 @@ var paymentCompletedQueue =
 
 builder.Services
     .AddOpenApi()
-    .ConfigureApiClient(userApiUri)
+    .ConfigureApiClient(
+        userApiUri,
+        productApiUri)
     .AddApplication(connectionString!)
     .AddMessageQueueing(
         hostName,

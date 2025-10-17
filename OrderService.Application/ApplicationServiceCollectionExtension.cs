@@ -44,13 +44,21 @@ public static class ApplicationServiceCollectionExtension
 
     public static IServiceCollection ConfigureApiClient
         (this IServiceCollection service,
-        string userApiUri)
+        string userApiUri,
+        string productApiUri)
     {
         service.AddHttpClient<UserApiClient>(config =>
         {
             config.BaseAddress = new Uri(userApiUri);
             config.DefaultRequestHeaders.Add("User-Agent", "OrderService/0.1");
         });
+
+        service.AddHttpClient<ProductApiClient>(config =>
+        {
+            config.BaseAddress = new Uri(productApiUri);
+            config.DefaultRequestHeaders.Add("User-Agent", "OrderService/0.1");
+        });
+
         return service;
     }
 }

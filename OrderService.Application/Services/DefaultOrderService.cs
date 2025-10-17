@@ -8,12 +8,14 @@ namespace OrderService.Application.Services;
 public class DefaultOrderService
     (IOrderRepository repository,
     OrderCreatedProducer producer,
-    UserApiClient userApiClient)
+    UserApiClient userApiClient,
+    ProductApiClient productApiClient)
     : IOrderService
 {
     private readonly IOrderRepository repository = repository;
     private readonly OrderCreatedProducer producer = producer;
     private readonly UserApiClient userApiClient = userApiClient;
+    private readonly ProductApiClient productApiClient = productApiClient;
 
     public void CreateOrder(Order order)
     {
@@ -21,6 +23,9 @@ public class DefaultOrderService
         var isValidCustomer =
             user != null
             && !string.IsNullOrEmpty(user.Email);
+
+        var productStock = productApiClient.GetProductStock(order.ProductId);
+        var enoughStock = order.Quantity <= productStock;
 
         repository.CreateOrder(order);
 
