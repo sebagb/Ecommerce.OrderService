@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrderService.Application.ApiClients;
 using OrderService.Application.Database;
 using OrderService.Application.MessageQueueing;
 using OrderService.Application.Repositories;
@@ -37,6 +38,18 @@ public static class ApplicationServiceCollectionExtension
                 hostName,
                 paymentCompleteQueue,
                 orderService);
+        });
+        return service;
+    }
+
+    public static IServiceCollection ConfigureApiClient
+        (this IServiceCollection service,
+        string userApiUri)
+    {
+        service.AddHttpClient<UserApiClient>(config =>
+        {
+            config.BaseAddress = new Uri(userApiUri);
+            config.DefaultRequestHeaders.Add("User-Agent", "OrderService/0.1");
         });
         return service;
     }

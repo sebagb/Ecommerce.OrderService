@@ -4,6 +4,9 @@ using OrderService.Application.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var userApiUri =
+    builder.Configuration["ApiServers:UserApiUri"]!;
+
 var connectionString =
     builder.Configuration["Database:ConnectionString"];
 
@@ -18,6 +21,7 @@ var paymentCompletedQueue =
 
 builder.Services
     .AddOpenApi()
+    .ConfigureApiClient(userApiUri)
     .AddApplication(connectionString!)
     .AddMessageQueueing(
         hostName,
