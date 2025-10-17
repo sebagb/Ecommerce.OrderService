@@ -30,9 +30,9 @@ public static class ApplicationServiceCollectionExtension
         service.AddSingleton(_ =>
             new OrderCreatedProducer(hostName, orderCreatedQueue));
 
-        service.AddHostedService(x =>
+        service.AddHostedService(config =>
         {
-            var orderService = x.GetRequiredService<IOrderService>();
+            var orderService = config.GetRequiredService<IOrderService>();
             return new PaymentCompleteConsumer(
                 hostName,
                 paymentCompleteQueue,
