@@ -40,7 +40,6 @@ public class PaymentCompleteConsumer
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
-            Console.WriteLine(message);
 
             var id = new Guid(message);
             service.UpdateOrderStatus(id);
