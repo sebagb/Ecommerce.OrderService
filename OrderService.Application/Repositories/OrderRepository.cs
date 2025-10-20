@@ -56,15 +56,15 @@ public class OrderRepository
         return order;
     }
 
-    public void UpdateOrderStatus(Guid id)
+    public void UpdateOrderStatus(Guid id, string status)
     {
         using var connection = connectionFactory.CreateConnection();
 
         var cmd = new CommandDefinition("""
             UPDATE Orders
-            SET Status = 'Paid'
+            SET Status = @status
             WHERE OrderId = @id
-            """, new { id });
+            """, new { id, status });
 
         connection.Execute(cmd);
     }

@@ -37,8 +37,8 @@ public class DefaultOrderService
         return repository.GetOrderById(id);
     }
 
-    public void UpdateOrderStatus(Guid id)
+    public void UpdateOrderStatus(Guid id, string status)
     {
-        repository.UpdateOrderStatus(id);
+        repository.UpdateOrderStatus(id, status);
     }
 }

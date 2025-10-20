@@ -17,6 +17,9 @@ public class PaymentCompleteConsumer
     private readonly IOrderService service = service;
     private IConnection? connection;
     private IChannel? channel;
+    private const string delimiter = ":";
+    private const int orderIdPosition = 0;
+    private const int statusPosition = 1;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -41,8 +44,10 @@ public class PaymentCompleteConsumer
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
 
-            var id = new Guid(message);
-            service.UpdateOrderStatus(id);
+            var result = message.Split(delimiter);
+            var id = new Guid(result[orderIdPosition]);
+            var status = result[statusPosition];
+            service.UpdateOrderStatus(id, status);
 
             return Task.CompletedTask;
         };
