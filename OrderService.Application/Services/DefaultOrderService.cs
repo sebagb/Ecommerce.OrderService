@@ -16,6 +16,8 @@ public class DefaultOrderService
     private readonly OrderCreatedProducer producer = producer;
     private readonly UserApiClient userApiClient = userApiClient;
     private readonly ProductApiClient productApiClient = productApiClient;
+    private const string paymentSucceeded = "Succeeded";
+    private const string paymentFailed = "Failed";
 
     public void CreateOrder(Order order)
     {
@@ -24,12 +26,17 @@ public class DefaultOrderService
             user != null
             && !string.IsNullOrEmpty(user.Email);
 
-        var productStock = productApiClient.GetProductStock(order.ProductId);
-        var enoughStock = order.Quantity <= productStock;
+        var product = productApiClient.GetProductById(order.ProductId);
+        var enoughStock = order.Quantity <= product.Stock;
+        if (enoughStock)
+        {
+            var updatedStock = product.Stock - order.Quantity;
+            product.Stock = updatedStock;
+            productApiClient.UpdateProduct(product);
+            producer.Publish(order.OrderId).Wait();
 
-        repository.CreateOrder(order);
-
-        producer.Publish(order.OrderId).Wait();
+            repository.CreateOrder(order);
+        }
     }
 
     public Order? GetOrderById(Guid id)
@@ -39,6 +46,17 @@ public class DefaultOrderService
 
     public void UpdateOrderStatus(Guid id, string status)
     {
+        if (status.Equals(paymentFailed))
+        {
+            var order = repository.GetOrderById(id);
+            var product = productApiClient.GetProductById(order.ProductId);
+
+            var updatedStock = product.Stock + order.Quantity;
+            product.Stock = updatedStock;
+            productApiClient.UpdateProduct(product);
+
+        }
+
         repository.UpdateOrderStatus(id, status);
     }
 }
