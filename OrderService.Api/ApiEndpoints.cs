@@ -10,32 +10,23 @@ public static class ApiEnpoints
     private readonly static string Create = $"{Base}";
     private readonly static string GetById = $"{Base}/{{id}}";
 
-    public static void RegisterOrderEndpoints
-        (this IEndpointRouteBuilder builder)
+    private static readonly string jsonBodyKey = "jsonBody";
+
+    public static void RegisterOrderEndpoints(
+        this IEndpointRouteBuilder builder)
     {
-        builder.MapPost(Create, CreateOrder);
+        builder.MapPost(Create, CreateOrder)
+            .AddEndpointFilter(BodyValidationFilter);
         builder.MapGet(GetById, GetOrderById);
     }
 
     private static async Task<IResult> CreateOrder(
-        HttpRequest request, IOrderService service)
+        HttpContext context,
+        IOrderService service)
     {
-        CreateOrderRequest? createOrderRequest;
-        try
-        {
-            createOrderRequest =
-                await request.ReadFromJsonAsync<CreateOrderRequest>();
-        }
-        catch (Exception ex)
-        {
-            if (ex is JsonException || ex is InvalidOperationException)
-            {
-                return Results.BadRequest($"{ex.Message}");
-            }
-            throw;
-        }
+        var request = (CreateOrderRequest)context.Items[jsonBodyKey]!;
 
-        var order = createOrderRequest!.MapToOrder();
+        var order = request.MapToOrder();
 
         service.CreateOrder(order);
 
@@ -53,5 +44,28 @@ public static class ApiEnpoints
 
         var response = order.MapToResponse();
         return Results.Ok(response);
+    }
+
+    private static async ValueTask<object?> BodyValidationFilter(
+        EndpointFilterInvocationContext context,
+        EndpointFilterDelegate next)
+    {
+        try
+        {
+            var request = await context.HttpContext.Request
+                .ReadFromJsonAsync<CreateOrderRequest>();
+
+            context.HttpContext.Items.Add(jsonBodyKey, request);
+        }
+        catch (Exception ex)
+        {
+            if (ex is JsonException || ex is InvalidOperationException)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            throw;
+        }
+
+        return await next(context);
     }
 }
