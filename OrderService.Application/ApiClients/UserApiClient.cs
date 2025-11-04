@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 using UserService.Contract.Responses;
 
@@ -10,6 +11,10 @@ public class UserApiClient(HttpClient httpClient)
     public UserResponse? GetUserById(Guid customerId)
     {
         var response = httpClient.GetAsync(customerId.ToString()).Result;
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
         var json = response.Content.ReadAsStringAsync().Result;
         var options = new JsonSerializerOptions
         {

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using OrderService.Application.Exceptions;
 using OrderService.Application.Services;
 using OrderService.Contract.Requests;
 
@@ -28,7 +29,14 @@ public static class ApiEnpoints
 
         var order = request.MapToOrder();
 
-        service.CreateOrder(order);
+        try
+        {
+            service.CreateOrder(order);
+        }
+        catch (CreateOrderException ex)
+        {
+            return Results.InternalServerError(ex.Message);
+        }
 
         var orderResponse = order.MapToResponse();
         return Results.Ok(orderResponse);

@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using ProductService.Contract.Responses;
 using ProductService.Contract.Requests;
+using System.Net;
 
 namespace OrderService.Application.ApiClients;
 
@@ -9,9 +10,13 @@ public class ProductApiClient(HttpClient httpClient)
 {
     private readonly HttpClient httpClient = httpClient;
 
-    public ProductResponse GetProductById(Guid productId)
+    public ProductResponse? GetProductById(Guid productId)
     {
         var response = httpClient.GetAsync(productId.ToString()).Result;
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
         var json = response.Content.ReadAsStringAsync().Result;
         var options = new JsonSerializerOptions
         {

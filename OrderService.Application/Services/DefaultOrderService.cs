@@ -1,4 +1,5 @@
 using OrderService.Application.ApiClients;
+using OrderService.Application.Exceptions;
 using OrderService.Application.MessageQueueing;
 using OrderService.Application.Models;
 using OrderService.Application.Repositories;
@@ -22,21 +23,32 @@ public class DefaultOrderService
     public void CreateOrder(Order order)
     {
         var user = userApiClient.GetUserById(order.CustomerId);
-        var isValidCustomer =
-            user != null
-            && !string.IsNullOrEmpty(user.Email);
+        if (user == null)
+        {
+            var msg = $"CreateOrder invalid CustomerId:{order.CustomerId}";
+            throw new CreateOrderException(msg);
+        }
 
         var product = productApiClient.GetProductById(order.ProductId);
-        var enoughStock = order.Quantity <= product.Stock;
-        if (enoughStock)
+        if (product == null)
         {
-            var updatedStock = product.Stock - order.Quantity;
-            product.Stock = updatedStock;
-            productApiClient.UpdateProduct(product);
-            producer.Publish(order.OrderId).Wait();
-
-            repository.CreateOrder(order);
+            var msg = $"CreateOrder invalid ProductId:{order.ProductId}";
+            throw new CreateOrderException(msg);
         }
+
+        var enoughStock = order.Quantity <= product.Stock;
+        if (!enoughStock)
+        {
+            var msg = $"CreateOrder invalid Stock";
+            throw new CreateOrderException(msg);
+        }
+
+        var updatedStock = product.Stock - order.Quantity;
+        product.Stock = updatedStock;
+        productApiClient.UpdateProduct(product);
+        producer.Publish(order.OrderId).Wait();
+
+        repository.CreateOrder(order);
     }
 
     public Order? GetOrderById(Guid id)
