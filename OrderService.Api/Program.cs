@@ -22,13 +22,13 @@ var orderCreatedQueue =
 var paymentCompletedQueue =
     builder.Configuration["MessageQueuing:PaymentCompletedQueue"]!;
 
-builder.Services
-    .AddOpenApi()
-    .ConfigureApiClient(
-        userApiUri,
-        productApiUri)
-    .AddApplication(connectionString!)
-    .AddMessageQueueing(
+builder.Services.AddOpenApi();
+
+builder.Services.ConfigureApiClient(userApiUri, productApiUri);
+
+builder.Services.AddApplication(connectionString!);
+
+builder.Services.AddMessageQueueing(
         hostName,
         orderCreatedQueue,
         paymentCompletedQueue);
