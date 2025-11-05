@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using OrderService.Application.Services;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 
 namespace OrderService.Application.MessageQueueing;
 
@@ -25,9 +26,26 @@ public class PaymentCompleteConsumer
     {
         var factory = new ConnectionFactory { HostName = hostName };
 
-        connection = await factory
-            .CreateConnectionAsync(cancellationToken);
-        channel = await connection
+        var isDisconnected = true;
+        while (isDisconnected)
+        {
+            try
+            {
+                connection = await factory
+                    .CreateConnectionAsync(cancellationToken);
+
+                isDisconnected = false;
+            }
+            catch (BrokerUnreachableException ex)
+            {
+                var msg =
+                    $"RabbitMQ exception. {ex.Message}. Attempting again ...";
+                Console.WriteLine(msg);
+                Thread.Sleep(3000);
+            }
+        }
+
+        channel = await connection!
             .CreateChannelAsync(cancellationToken: cancellationToken);
 
         await channel.QueueDeclareAsync(
